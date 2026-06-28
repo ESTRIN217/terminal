@@ -29,6 +29,16 @@ import java.util.List;
 
 public class TermuxSessionsListViewController extends ArrayAdapter<TermuxSession> implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
+    public static String getTabTitle(TerminalSession session, int index) {
+        if (session == null) return "[" + (index + 1) + "]";
+        String name = session.mSessionName;
+        String numberPart = "[" + (index + 1) + "]";
+        if (!TextUtils.isEmpty(name)) {
+            return numberPart + " " + name;
+        }
+        return numberPart;
+    }
+
     final TermuxActivity mActivity;
 
     final StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);

@@ -22,9 +22,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.android.material.tabs.TabLayout;
 
 import com.termux.R;
 import com.termux.app.api.file.FileReceiverActivity;
@@ -44,6 +45,7 @@ import com.termux.app.activities.SettingsActivity;
 import com.termux.shared.termux.crash.TermuxCrashUtils;
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.termux.app.terminal.TermuxSessionsListViewController;
+import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
 import com.termux.app.terminal.io.TerminalToolbarViewPager;
 import com.termux.app.terminal.TermuxTerminalViewClient;
 import com.termux.shared.termux.extrakeys.ExtraKeysView;
@@ -137,6 +139,13 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
      * The termux sessions list controller.
      */
     TermuxSessionsListViewController mTermuxSessionListViewController;
+
+    /**
+     * The session tabs in the appbar.
+     */
+    TabLayout mTabLayout;
+
+    private boolean mIsSelectingTab;
 
     /**
      * The {@link TermuxActivity} broadcast receiver for various things like terminal style configuration changes.
@@ -247,9 +256,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
         setSettingsButtonView();
 
-        setNewSessionButtonView();
-
         setToggleKeyboardView();
+
+        setupSessionTabs();
 
         registerForContextMenu(mTerminalView);
 
@@ -341,7 +350,6 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         removeTermuxActivityRootViewGlobalLayoutListener();
 
         unregisterTermuxActivityBroadcastReceiver();
-        getDrawer().closeDrawers();
     }
 
     @Override
@@ -498,11 +506,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     }
 
     private void setTermuxSessionsListView() {
-        ListView termuxSessionsListView = findViewById(R.id.terminal_sessions_list);
-        mTermuxSessionListViewController = new TermuxSessionsListViewController(this, mTermuxService.getTermuxSessions());
-        termuxSessionsListView.setAdapter(mTermuxSessionListViewController);
-        termuxSessionsListView.setOnItemClickListener(mTermuxSessionListViewController);
-        termuxSessionsListView.setOnItemLongClickListener(mTermuxSessionListViewController);
+        rebuildSessionTabs();
     }
 
 
@@ -570,22 +574,84 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
         });
     }
 
-    private void setNewSessionButtonView() {
-        View newSessionButton = findViewById(R.id.new_session_button);
-        newSessionButton.setOnClickListener(v -> mTermuxTerminalSessionActivityClient.addNewSession(false, null));
-        newSessionButton.setOnLongClickListener(v -> {
-            TextInputDialogUtils.textInput(TermuxActivity.this, R.string.title_create_named_session, null,
-                R.string.action_create_named_session_confirm, text -> mTermuxTerminalSessionActivityClient.addNewSession(false, text),
-                R.string.action_new_session_failsafe, text -> mTermuxTerminalSessionActivityClient.addNewSession(true, text),
-                -1, null, null);
-            return true;
+    private void setupSessionTabs() {
+        mTabLayout = findViewById(R.id.terminal_tabs);
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (mIsSelectingTab) return;
+                mIsSelectingTab = true;
+
+                TermuxService service = mTermuxService;
+                if (service == null) {
+                    mIsSelectingTab = false;
+                    return;
+                }
+
+                int position = tab.getPosition();
+                int sessionCount = service.getTermuxSessionsSize();
+
+                if (position < sessionCount) {
+                    TermuxSession termuxSession = service.getTermuxSession(position);
+                    if (termuxSession != null) {
+                        mTermuxTerminalSessionActivityClient.setCurrentSession(termuxSession.getTerminalSession());
+                    }
+                } else if (position == sessionCount) {
+                    mTermuxTerminalSessionActivityClient.addNewSession(false, null);
+                    rebuildSessionTabs();
+                }
+
+                mIsSelectingTab = false;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
+
+        rebuildSessionTabs();
+    }
+
+    private void rebuildSessionTabs() {
+        if (mTabLayout == null || mTermuxService == null) return;
+
+        mIsSelectingTab = true;
+
+        TermuxService service = mTermuxService;
+        mTabLayout.removeAllTabs();
+
+        for (int i = 0; i < service.getTermuxSessionsSize(); i++) {
+            TermuxSession termuxSession = service.getTermuxSession(i);
+            if (termuxSession != null) {
+                String title = TermuxSessionsListViewController.getTabTitle(termuxSession.getTerminalSession(), i);
+                TabLayout.Tab tab = mTabLayout.newTab().setText(title);
+                tab.setContentDescription(termuxSession.getTerminalSession().mSessionName);
+                mTabLayout.addTab(tab);
+            }
+        }
+
+        TabLayout.Tab plusTab = mTabLayout.newTab().setText("+");
+        mTabLayout.addTab(plusTab);
+
+        TerminalSession currentSession = getCurrentSession();
+        if (currentSession != null) {
+            int currentIndex = service.getIndexOfSession(currentSession);
+            if (currentIndex >= 0 && currentIndex < mTabLayout.getTabCount() - 1) {
+                TabLayout.Tab tab = mTabLayout.getTabAt(currentIndex);
+                if (tab != null) tab.select();
+            }
+        }
+
+        mIsSelectingTab = false;
     }
 
     private void setToggleKeyboardView() {
         findViewById(R.id.toggle_keyboard_button).setOnClickListener(v -> {
             mTermuxTerminalViewClient.onToggleSoftKeyboardRequest();
-            getDrawer().closeDrawers();
         });
 
         findViewById(R.id.toggle_keyboard_button).setOnLongClickListener(v -> {
@@ -601,8 +667,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
     @SuppressLint("RtlHardcoded")
     @Override
     public void onBackPressed() {
-        if (getDrawer().isDrawerOpen(Gravity.LEFT)) {
-            getDrawer().closeDrawers();
+        DrawerLayout drawer = getDrawer();
+        if (drawer != null && drawer.isDrawerOpen(Gravity.LEFT)) {
+            drawer.closeDrawers();
         } else {
             finishActivityIfNotFinishing();
         }
@@ -856,7 +923,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
 
     public void termuxSessionListNotifyUpdated() {
-        mTermuxSessionListViewController.notifyDataSetChanged();
+        if (mTermuxSessionListViewController != null)
+            mTermuxSessionListViewController.notifyDataSetChanged();
+        rebuildSessionTabs();
     }
 
     public boolean isVisible() {

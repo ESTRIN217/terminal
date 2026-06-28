@@ -11,10 +11,11 @@ import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.text.TextUtils;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.tabs.TabLayout;
 
 import com.termux.R;
 import com.termux.shared.interact.ShareUtils;
@@ -383,8 +384,6 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
 
             TerminalSession newTerminalSession = newTermuxSession.getTerminalSession();
             setCurrentSession(newTerminalSession);
-
-            mActivity.getDrawer().closeDrawers();
         }
     }
 
@@ -462,12 +461,13 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
 
         final int indexOfSession = service.getIndexOfSession(session);
         if (indexOfSession < 0) return;
-        final ListView termuxSessionsListView = mActivity.findViewById(R.id.terminal_sessions_list);
-        if (termuxSessionsListView == null) return;
+        TabLayout tabLayout = mActivity.findViewById(R.id.terminal_tabs);
+        if (tabLayout == null) return;
 
-        termuxSessionsListView.setItemChecked(indexOfSession, true);
-        // Delay is necessary otherwise sometimes scroll to newly added session does not happen
-        termuxSessionsListView.postDelayed(() -> termuxSessionsListView.smoothScrollToPosition(indexOfSession), 1000);
+        TabLayout.Tab tab = tabLayout.getTabAt(indexOfSession);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
 
