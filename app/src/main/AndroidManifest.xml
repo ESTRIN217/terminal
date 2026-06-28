@@ -97,6 +97,13 @@
             tools:targetApi="n" />
 
         <activity
+            android:name=".app.activities.FileManagerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_file_manager"
+            android:parentActivityName=".app.TermuxActivity"
+            android:theme="@style/Theme.TermuxApp.DayNight.NoActionBar" />
+
+        <activity
             android:name=".app.activities.SettingsActivity"
             android:exported="true"
             android:label="@string/title_activity_termux_settings"
@@ -174,6 +181,16 @@
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="${TERMUX_PACKAGE_NAME}.permission.RUN_COMMAND" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${TERMUX_PACKAGE_NAME}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
 
         <receiver
