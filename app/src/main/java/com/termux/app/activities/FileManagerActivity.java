@@ -329,7 +329,7 @@ public class FileManagerActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        goBackOrUp();
+        finish();
         return true;
     }
 
