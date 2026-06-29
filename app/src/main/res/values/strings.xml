@@ -90,6 +90,82 @@
     <string name="title_activity_file_manager">File Manager</string>
     <string name="action_open_file">Open with</string>
 
+    <!-- File Manager Actions -->
+    <string name="action_search">Search</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_show_hidden">Show hidden files</string>
+    <string name="action_hide_hidden">Hide hidden files</string>
+    <string name="action_bookmarks">Bookmarks</string>
+    <string name="action_add_bookmark">Add current directory to bookmarks</string>
+    <string name="action_new_folder">New folder</string>
+    <string name="action_new_file">New file</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_share">Share</string>
+    <string name="action_details">Details</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_deselect_all">Deselect all</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_go_back">Back</string>
+    <string name="action_go_forward">Forward</string>
+
+    <!-- File Manager Dialogs -->
+    <string name="title_new_folder">Create folder</string>
+    <string name="title_new_file">Create file</string>
+    <string name="title_rename">Rename</string>
+    <string name="title_confirm_delete">Confirm delete</string>
+    <string name="msg_confirm_delete">Are you sure you want to delete %1$s?</string>
+    <string name="msg_confirm_delete_multiple">Are you sure you want to delete %1$d items?</string>
+    <string name="hint_name">Name</string>
+    <string name="action_create">Create</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_paste_items">Paste %1$d item(s) here</string>
+
+    <!-- File Manager Messages -->
+    <string name="msg_file_created">Created %1$s</string>
+    <string name="msg_file_deleted">Deleted %1$s</string>
+    <string name="msg_file_renamed">Renamed to %1$s</string>
+    <string name="msg_file_copied">Copied %1$s</string>
+    <string name="msg_files_copied">Copied %1$d item(s)</string>
+    <string name="msg_files_moved">Moved %1$d item(s)</string>
+    <string name="msg_undo_delete">Deleted %1$s</string>
+    <string name="msg_paste_success">Pasted %1$d item(s)</string>
+    <string name="msg_error_create">Failed to create %1$s</string>
+    <string name="msg_error_rename">Failed to rename</string>
+    <string name="msg_error_delete">Failed to delete %1$s</string>
+    <string name="msg_error_copy">Failed to copy %1$s</string>
+    <string name="msg_error_move">Failed to move %1$s</string>
+    <string name="msg_error_paste">Failed to paste items</string>
+
+    <!-- Sort Options -->
+    <string name="sort_name">Name</string>
+    <string name="sort_date">Date</string>
+    <string name="sort_size">Size</string>
+    <string name="sort_type">Type</string>
+
+    <!-- Bookmarks -->
+    <string name="bookmark_home">Home (~)</string>
+    <string name="bookmark_downloads">Downloads</string>
+    <string name="bookmark_root">Root (/)</string>
+    <string name="bookmark_sdcard">Internal storage</string>
+
+    <!-- File Details -->
+    <string name="title_details">File details</string>
+    <string name="detail_name">Name</string>
+    <string name="detail_path">Path</string>
+    <string name="detail_size">Size</string>
+    <string name="detail_modified">Modified</string>
+    <string name="detail_permissions">Permissions</string>
+    <string name="detail_mime">MIME type</string>
+    <string name="detail_contents">Contents</string>
+    <string name="detail_items">items</string>
+
+    <!-- Selection mode -->
+    <string name="selection_mode_title">%1$d selected</string>
+
     <string name="action_report_issue">Report Issue</string>
     <string name="msg_generating_report">Generating Report</string>
     <string name="msg_add_termux_debug_info">Add termux debug info to report?</string>
