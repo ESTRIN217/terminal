@@ -235,4 +235,81 @@
     <!-- Donate Preference -->
     <string name="donate_preference_title">Doar</string>
 
+
+    <!-- File Manager Actions -->
+    <string name="action_search">Pesquisar</string>
+    <string name="action_sort">Ordenar</string>
+    <string name="action_show_hidden">Mostrar arquivos ocultos</string>
+    <string name="action_hide_hidden">Ocultar arquivos ocultos</string>
+    <string name="action_bookmarks">Favoritos</string>
+    <string name="action_add_bookmark">Adicionar diretório atual aos favoritos</string>
+    <string name="action_new_folder">Nova pasta</string>
+    <string name="action_new_file">Novo arquivo</string>
+    <string name="action_rename">Renomear</string>
+    <string name="action_delete">Excluir</string>
+    <string name="action_copy">Copiar</string>
+    <string name="action_cut">Cortar</string>
+    <string name="action_paste">Colar</string>
+    <string name="action_share">Compartilhar</string>
+    <string name="action_details">Detalhes</string>
+    <string name="action_select_all">Selecionar tudo</string>
+    <string name="action_deselect_all">Desmarcar tudo</string>
+    <string name="action_undo">Desfazer</string>
+    <string name="action_go_back">Voltar</string>
+    <string name="action_go_forward">Avançar</string>
+
+    <!-- File Manager Dialogs -->
+    <string name="title_new_folder">Criar pasta</string>
+    <string name="title_new_file">Criar arquivo</string>
+    <string name="title_rename">Renomear</string>
+    <string name="title_confirm_delete">Confirmar exclusão</string>
+    <string name="msg_confirm_delete">Tem certeza que deseja excluir %1$s?</string>
+    <string name="msg_confirm_delete_multiple">Tem certeza que deseja excluir %1$d itens?</string>
+    <string name="hint_name">Nome</string>
+    <string name="action_create">Criar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_paste_items">Colar %1$d item(ns) aqui</string>
+
+    <!-- File Manager Messages -->
+    <string name="msg_file_created">%1$s criado</string>
+    <string name="msg_file_deleted">%1$s excluído</string>
+    <string name="msg_file_renamed">Renomeado para %1$s</string>
+    <string name="msg_file_copied">%1$s copiado</string>
+    <string name="msg_files_copied">%1$d item(ns) copiado(s)</string>
+    <string name="msg_files_moved">%1$d item(ns) movido(s)</string>
+    <string name="msg_undo_delete">%1$s excluído</string>
+    <string name="msg_paste_success">%1$d item(ns) colado(s)</string>
+    <string name="msg_error_create">Erro ao criar %1$s</string>
+    <string name="msg_error_rename">Erro ao renomear</string>
+    <string name="msg_error_delete">Erro ao excluir %1$s</string>
+    <string name="msg_error_copy">Erro ao copiar %1$s</string>
+    <string name="msg_error_move">Erro ao mover %1$s</string>
+    <string name="msg_error_paste">Erro ao colar itens</string>
+
+    <!-- Sort Options -->
+    <string name="sort_name">Nome</string>
+    <string name="sort_date">Data</string>
+    <string name="sort_size">Tamanho</string>
+    <string name="sort_type">Tipo</string>
+
+    <!-- Bookmarks -->
+    <string name="bookmark_home">Início (~)</string>
+    <string name="bookmark_downloads">Downloads</string>
+    <string name="bookmark_root">Raiz (/)</string>
+    <string name="bookmark_sdcard">Armazenamento interno</string>
+
+    <!-- File Details -->
+    <string name="title_details">Detalhes do arquivo</string>
+    <string name="detail_name">Nome</string>
+    <string name="detail_path">Caminho</string>
+    <string name="detail_size">Tamanho</string>
+    <string name="detail_modified">Modificado</string>
+    <string name="detail_permissions">Permissões</string>
+    <string name="detail_mime">Tipo MIME</string>
+    <string name="detail_contents">Conteúdo</string>
+    <string name="detail_items">itens</string>
+
+    <!-- Selection mode -->
+    <string name="selection_mode_title">%1$d selecionados</string>
+
 </resources>
