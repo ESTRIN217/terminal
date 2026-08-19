@@ -1,25 +1,17 @@
 plugins {
     id("com.android.library")
-    `maven-publish`
 }
 
 android {
     namespace = "com.termux.emulator"
 
-    compileSdk = project.properties["compileSdkVersion"]?.toString()?.toInt() ?: 36
+    compileSdk { version = release(37) { minorApiLevel = 1 } }
     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties["ndkVersion"]?.toString() ?: ""
 
     defaultConfig {
         minSdk = project.properties["minSdkVersion"]?.toString()?.toInt() ?: 21
-
-        externalNativeBuild {
-            ndkBuild {
-                cFlags("-std=c11", "-Wall", "-Wextra", "-Werror", "-Os", "-fno-stack-protector", "-Wl,--gc-sections")
-            }
-        }
-
         ndk {
-            abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
+            abiFilters.addAll(listOf("arm64-v8a"))
         }
     }
 
@@ -31,14 +23,15 @@ android {
     }
 
     externalNativeBuild {
-        ndkBuild {
-            path = file("src/main/jni/Android.mk")
+        cmake {
+            version = "3.31.6"
+            path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     testOptions {
@@ -61,25 +54,11 @@ tasks.withType<Test> {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.9.0")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.androidx.annotation)
+    testImplementation(libs.junit)
 }
 
 tasks.register<Jar>("sourceJar") {
     from(project.android.sourceSets.getByName("main").java)
     archiveClassifier.set("sources")
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            register("release", MavenPublication::class) {
-                from(components["default"])
-                groupId = "com.estrin217"
-                artifactId = "terminal-emulator"
-                version = "0.118.0"
-                artifact(tasks.named("sourceJar"))
-            }
-        }
-    }
 }

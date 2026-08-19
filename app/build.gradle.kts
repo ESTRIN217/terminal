@@ -1,5 +1,5 @@
+import java.math.BigInteger
 import java.net.URI
-import java.net.URL
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.util.regex.Pattern
@@ -17,22 +17,22 @@ val splitAPKsForReleaseBuilds = System.getenv("TERMUX_SPLIT_APKS_FOR_RELEASE_BUI
 android {
     namespace = "com.termux"
 
-    compileSdk = project.properties["compileSdkVersion"]?.toString()?.toInt() ?: 36
+    compileSdk { version = release(37) { minorApiLevel = 1 } }
     ndkVersion = System.getenv("JITPACK_NDK_VERSION") ?: project.properties["ndkVersion"]?.toString() ?: ""
 
     dependencies {
-        implementation("androidx.annotation:annotation:1.9.0")
-        implementation("androidx.core:core:1.13.1")
-        implementation("androidx.drawerlayout:drawerlayout:1.2.0")
-        implementation("androidx.preference:preference:1.2.1")
-        implementation("androidx.viewpager:viewpager:1.0.0")
-        implementation("com.google.android.material:material:1.12.0")
-        implementation("com.google.guava:guava:24.1-jre")
-        implementation("io.noties.markwon:core:${project.properties["markwonVersion"]}")
-        implementation("io.noties.markwon:ext-strikethrough:${project.properties["markwonVersion"]}")
-        implementation("io.noties.markwon:linkify:${project.properties["markwonVersion"]}")
-        implementation("io.noties.markwon:recycler:${project.properties["markwonVersion"]}")
-        implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+        implementation(libs.androidx.annotation)
+        implementation(libs.androidx.core)
+        implementation(libs.androidx.drawerlayout)
+        implementation(libs.androidx.preference)
+        implementation(libs.androidx.viewpager)
+        implementation(libs.google.material)
+        implementation(libs.google.guava)
+        implementation(libs.markwon.core)
+        implementation(libs.markwon.ext.strikethrough)
+        implementation(libs.markwon.linkify)
+        implementation(libs.markwon.recycler)
+        implementation(libs.google.listenablefuture)
 
         implementation(project(":terminal-view"))
         implementation(project(":termux-shared"))
@@ -48,7 +48,7 @@ android {
 
         buildConfigField("String", "TERMUX_PACKAGE_VARIANT", "\"$packageVariant\"")
 
-        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = "com.estrin217.terminal"
+        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = "com.termux"
         manifestPlaceholders["TERMUX_APP_NAME"] = "Termux"
         manifestPlaceholders["TERMUX_API_APP_NAME"] = "Termux:API"
         manifestPlaceholders["TERMUX_BOOT_APP_NAME"] = "Termux:Boot"
@@ -57,18 +57,12 @@ android {
         manifestPlaceholders["TERMUX_TASKER_APP_NAME"] = "Termux:Tasker"
         manifestPlaceholders["TERMUX_WIDGET_APP_NAME"] = "Termux:Widget"
 
-        externalNativeBuild {
-            ndkBuild {
-                cFlags("-std=c11", "-Wall", "-Wextra", "-Werror", "-Os", "-fno-stack-protector", "-Wl,--gc-sections")
-            }
-        }
-
         splits {
             abi {
                 isEnable = (gradle.startParameter.taskNames.any { it.contains("Debug") } && splitAPKsForDebugBuilds == "1") ||
                     (gradle.startParameter.taskNames.any { it.contains("Release") } && splitAPKsForReleaseBuilds == "1")
                 reset()
-                include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+                include("arm64-v8a")
                 isUniversalApk = true
             }
         }
@@ -97,13 +91,14 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     externalNativeBuild {
-        ndkBuild {
-            path = file("src/main/cpp/Android.mk")
+        cmake {
+            version = "3.31.6"
+            path = file("src/main/cpp/CMakeLists.txt")
         }
     }
 
@@ -127,9 +122,9 @@ android {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.10")
-    add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:1.1.5")
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    add("coreLibraryDesugaring", libs.desugar.jdk.libs)
 }
 
 tasks.register("versionName") {
