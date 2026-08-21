@@ -58,6 +58,17 @@
             android:resizeableActivity="true"
             android:theme="@style/Theme.TermuxActivity.DayNight.NoActionBar"
             tools:targetApi="n">
+        </activity>
+
+        <activity
+            android:name=".app.TermuxComposeActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|keyboard|keyboardHidden|navigation"
+            android:label="@string/application_name"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:theme="@style/Theme.TermuxActivity.DayNight.NoActionBar"
+            tools:targetApi="n">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

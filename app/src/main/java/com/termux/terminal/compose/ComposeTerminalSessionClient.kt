@@ -1,0 +1,31 @@
+package com.termux.terminal.compose
+
+import com.termux.shared.termux.terminal.TermuxTerminalSessionClientBase
+import com.termux.terminal.TerminalSession
+
+/**
+ * [TermuxTerminalSessionClientBase] implementation for the Compose UI.
+ *
+ * Forwards session events to the currently composed [com.termux.view.TerminalView] (looked
+ * up in [TerminalViewRegistry]) and to the [TermuxViewModel] state. It is registered on
+ * {@link com.termux.app.TermuxService} when {@link com.termux.app.TermuxComposeActivity}
+ * binds, replacing the service client so that the view gets screen update notifications.
+ */
+class ComposeTerminalSessionClient(
+    private val mViewModel: TermuxViewModel
+) : TermuxTerminalSessionClientBase() {
+
+    override fun onTextChanged(changedSession: TerminalSession) {
+        if (changedSession == mViewModel.uiState.value.activeSession)
+            TerminalViewRegistry.activeView?.onScreenUpdated()
+    }
+
+    override fun onTitleChanged(updatedSession: TerminalSession) {
+        mViewModel.updateSessionTitle(updatedSession, updatedSession.title ?: "")
+    }
+
+    override fun onColorsChanged(changedSession: TerminalSession) {
+        if (changedSession == mViewModel.uiState.value.activeSession)
+            TerminalViewRegistry.activeView?.onScreenUpdated()
+    }
+}

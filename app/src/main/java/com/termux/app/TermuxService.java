@@ -88,6 +88,13 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
      */
     private final TermuxTerminalSessionServiceClient mTermuxTerminalSessionServiceClient = new TermuxTerminalSessionServiceClient(this);
 
+    /** The full implementation of the {@link TerminalSessionClient} interface to be used by {@link TerminalSession}
+     * that is set by alternative UI surfaces like {@link com.termux.app.TermuxComposeActivity}.
+     * Note that the service may often outlive the activity, so need to clear this reference.
+     */
+    private TermuxTerminalSessionClientBase mComposeTerminalSessionClient;
+
+
     /**
      * Termux app shared properties manager, loaded from termux.properties
      */
@@ -197,6 +204,8 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
         // clients with references to the activity.
         if (mTermuxTerminalSessionActivityClient != null)
             unsetTermuxTerminalSessionClient();
+        if (mComposeTerminalSessionClient != null)
+            unsetComposeTerminalSessionClient();
         return false;
     }
 
@@ -745,6 +754,8 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
     public synchronized TermuxTerminalSessionClientBase getTermuxTerminalSessionClient() {
         if (mTermuxTerminalSessionActivityClient != null)
             return mTermuxTerminalSessionActivityClient;
+        else if (mComposeTerminalSessionClient != null)
+            return mComposeTerminalSessionClient;
         else
             return mTermuxTerminalSessionServiceClient;
     }
@@ -773,6 +784,36 @@ public final class TermuxService extends Service implements AppShell.AppShellCli
             mShellManager.mTermuxSessions.get(i).getTerminalSession().updateTerminalSessionClient(mTermuxTerminalSessionServiceClient);
 
         mTermuxTerminalSessionActivityClient = null;
+    }
+
+    /** This should be called when an alternative UI surface like
+     * {@link com.termux.app.TermuxComposeActivity#onServiceConnected} is called to set the
+     * {@link TermuxService#mComposeTerminalSessionClient} variable and update the {@link TerminalSession}
+     * and {@link TerminalEmulator} clients in case they were passed {@link TermuxTerminalSessionServiceClient}
+     * earlier.
+     *
+     * @param composeTerminalSessionClient The {@link TermuxTerminalSessionClientBase} object that fully
+     * implements the {@link TerminalSessionClient} interface.
+     */
+    public synchronized void setComposeTerminalSessionClient(TermuxTerminalSessionClientBase composeTerminalSessionClient) {
+        mComposeTerminalSessionClient = composeTerminalSessionClient;
+
+        for (int i = 0; i < mShellManager.mTermuxSessions.size(); i++)
+            mShellManager.mTermuxSessions.get(i).getTerminalSession().updateTerminalSessionClient(mComposeTerminalSessionClient);
+    }
+
+    /** This should be called when the alternative UI surface that called
+     * {@link #setComposeTerminalSessionClient(TermuxTerminalSessionClientBase)} has been destroyed or unbound,
+     * so that the {@link TerminalSession} and {@link TerminalEmulator} clients do not hold activity references.
+     */
+    public synchronized void unsetComposeTerminalSessionClient() {
+        if (mComposeTerminalSessionClient == null)
+            return;
+
+        for (int i = 0; i < mShellManager.mTermuxSessions.size(); i++)
+            mShellManager.mTermuxSessions.get(i).getTerminalSession().updateTerminalSessionClient(mTermuxTerminalSessionServiceClient);
+
+        mComposeTerminalSessionClient = null;
     }
 
 

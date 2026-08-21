@@ -6,6 +6,8 @@ import java.util.regex.Pattern
 
 plugins {
     id("com.android.application")
+    alias(libs.plugins.jetbrains.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val packageVariant: String = System.getenv("TERMUX_PACKAGE_VARIANT") ?: "apt-android-7"
@@ -118,6 +120,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 }
 
@@ -125,6 +128,20 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
     add("coreLibraryDesugaring", libs.desugar.jdk.libs)
+
+    // Compose
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.activity.compose)
+
+    // Kotlin coroutines
+    implementation(libs.kotlinx.coroutines.android)
 }
 
 tasks.register("versionName") {
